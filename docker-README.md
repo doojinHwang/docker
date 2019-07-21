@@ -22,7 +22,8 @@ host의 리소스를 공유
 #### cnetOS ip확인 명령
 	ip a s
 
-#### docker version
+#### docker version 확인
+	docker version
 1) EE(docker enterprise 버전) 
 2) CE(open source): 실습시 사용  
  가. Edge - 1 월  주기로 개발됨, -최신버전이나 안정되질 않음    
