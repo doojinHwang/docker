@@ -1,6 +1,6 @@
 # docker 내용정리
 
-## docker 개요
+## 1. docker 개요
 
 #### image 와  container 의 큰 차이점
 -image: disk에 존재  
@@ -36,7 +36,10 @@ host의 리소스를 공유
   <br>
   <br>
   
-# 1. docker 사전 설치
+## 2. docker 설치  
+
+### 1) docker 사전 설치
+
 1.yum 설치(사전 package설치]
 
 	$ sudo yum install -y yum-utils \
@@ -48,7 +51,7 @@ host의 리소스를 공유
 	    https://download.docker.com/linux/centos/docker-ce.repo
 
 
-## 2. docker 설치
+### 2) docker 설치
 	$ sudo yum install docker-ce docker-ce-cli containerd.io
 	$ sudo systemctl start docker 
 	$ sudo systemctl enable docker 
@@ -57,7 +60,10 @@ host의 리소스를 공유
 	$ sudo yum install bash-completion
 	=> yum list bash-completion
 
-
+  <br>
+  <br>
+  <br>
+  
 ## 3. docker 명령어
 (참고) sudo docker ~ 
 ==> root권한이면 sudo 생략가능하지만 사용자 계정이면 sudo를 사용
@@ -84,14 +90,14 @@ host의 리소스를 공유
 > docker start 이미지
 
 > docker start -a(attach) 이미지명
-==> shell 명령
+==> shell 명령  
 
-> docker start -ai 이미지명 
-==> 내부 shell 명령실행으로..
+> docker start -ai 이미지명   
+==> 내부 shell 명령실행으로..  
 (참고)
-내 bash 가 실행된 상태에서 빠져 나오기.
-exit: 실행중인 컨테이너가 종료되면서 빠져나옴.
-ctrl + p + q : 실행 컨테이너가 종료하질 않고 bash만 빠져나욤
+내 bash 가 실행된 상태에서 빠져 나오기.  
+exit: 실행중인 컨테이너가 종료되면서 빠져나옴.  
+ctrl + p + q : 실행 컨테이너가 종료하질 않고 bash만 빠져나욤  
 
 
 
@@ -100,11 +106,11 @@ ctrl + p + q : 실행 컨테이너가 종료하질 않고 bash만 빠져나욤
 
 ### 컨테이너 실행
     docker run [옵션] 이미지명
-==> run: create + start 2개 명령어 같이 실행한 것과 같음
+==> run: create + start 2개 명령어 같이 실행한 것과 같음  
 
     docker run -itd --name web httpd:latest
-==> -it 옵션을 붙여야 shell 이미지 실행가능
-==> --name 옵션은 컨테이너에 원하는 이름부여, 만약 생략시 docker에서 자동으로이름부여 함.
+==> -it 옵션을 붙여야 shell 이미지 실행가능  
+==> --name 옵션은 컨테이너에 원하는 이름부여, 만약 생략시 docker에서 자동으로이름부여 함.  
 
     docker run -d --name web httpd:latest
 ==> -d: background로 실행, -it: shell 명령실행 
@@ -116,22 +122,22 @@ ctrl + p + q : 실행 컨테이너가 종료하질 않고 bash만 빠져나욤
 (서비스 컨테이너에 bash명령 삽입)
 
     docker run -it --name web httpd:latest bash
-==> 해당 이미지에 shell이 있어함.
-==> 컨테이너 실행시 bash로 접속되여 명령서 실행 가능
+==> 해당 이미지에 shell이 있어함.  
+==> 컨테이너 실행시 bash로 접속되여 명령서 실행 가능  
 
 
 ### docker image 삭제
-> docker rmi <이미지명>
+> docker rmi <이미지명> 
     
     docker rmi apache
 
 (참고) hard link : 
-- file -> I-node  : file에 대한 링크 정보를 같고~~~
+- file -> I-node  : file에 대한 링크 정보를 같고~~~  
 
 ### docker tag 부여
 hard link를 붙인다는 의미 
 
-> sudo docker tag 허브ID(onsoftel)/리포지토리이름:태그
+> sudo docker tag 허브ID(onsoftel)/리포지토리이름:태그  
 
     sudo docker tag centos:latest redface7/2019-02-cccr:centos
     sudo docker tag centos:latest onsoftel/2019-02-cccr:centos
@@ -158,18 +164,21 @@ hard link를 붙인다는 의미
 컨테이너(이미지) 세부정보 확인
 
     sudo docker inspect centos
-==> "RoofFs": 영역이 layer 정보 임.
-==> 이미지인지/컨테이너인지 구분은 상세정보 중에 network정보로 구분, 즉 IP가 부여된 것은 컨테이너
+==> "RoofFs": 영역이 layer 정보 임.  
+==> 이미지인지/컨테이너인지 구분은 상세정보 중에 network정보로 구분, 즉 IP가 부여된 것은 컨테이너  
+
+<br>
+
+(참고) docker 이미지 종류   
+(한재경 강사 의견 기준)    
+- shell 이미지: 세부정보 내용중 Config정보에서 CMD 영역이: /bin/bash 있으면 해당  
+- service 이미지  
 
 
-(참고) docker 이미지 종류
-(한재경 강사 의견 기준)
-- shell 이미지: 세부정보 내용중 Config정보에서 CMD 영역이: /bin/bash 있으면 해당
-- service 이미지
 
-
-
-
+  <br>
+  <br>
+  <br>
 
 
 ### 쉡접속명령
@@ -182,40 +191,41 @@ hard link를 붙인다는 의미
 
 
 ### 컨테이너에서 실행되고 있는 프로세스 목록을 출력
-> docker top <컨테이너 이름, ID> <ps 옵션>
-host기준으로 보임
-==> -ef 많이 사용
-(참고) ps 옵션
--a: 모든 사용자의 프로세스를 출력합니다.
--u: 각 프로세스의 사용자(UID)를 표시합니다.
--s: 시그널을 표시합니다.
--v: 가상 메모리를 표시합니다.
--x: 자신을 실행시킨 셸이 없는 프로세스를 출력합니다.
--c: 커널에서 사용되는 프로세스 이름으로 표시합니다.
--e: 환경 변수를 표시합니다.
--f: 내용을 완전한 형태로 표시합니다.
--l: 자세한 형식으로 출력합니다.
--n: WCHAN 값을 숫자료 출력합니다.
+> docker top <컨테이너 이름, ID> <ps 옵션>  
+host기준으로 보임    
+==> -ef 많이 사용  
 
-### 실행중인 컨테이너 수정
- > sudo docker exec <컨테이너명>
- -i -t 옵션 많이 사용 
+(참고: ps 옵션)  
+-a: 모든 사용자의 프로세스를 출력합니다.  
+-u: 각 프로세스의 사용자(UID)를 표시합니다.  
+-s: 시그널을 표시합니다.  
+-v: 가상 메모리를 표시합니다.  
+-x: 자신을 실행시킨 셸이 없는 프로세스를 출력합니다.  
+-c: 커널에서 사용되는 프로세스 이름으로 표시합니다.  
+-e: 환경 변수를 표시합니다.  
+-f: 내용을 완전한 형태로 표시합니다.  
+-l: 자세한 형식으로 출력합니다.  
+-n: WCHAN 값을 숫자료 출력합니다.  
+
+### 실행중인 컨테이너 수정  
+ > sudo docker exec <컨테이너명>  
+ -i -t 옵션 많이 사용  
  
     $ sudo docker exec -it web bash
-==> bash shell 포함 http같이 실행됨.
-(참고) apache 이미지의 http.conf 파일 위치 확인: cd DocumnetRoot httd.conf
-==> exec 실행된 컨테이너 에서 exit로 빠져나오면 컨테이는 종료되질 않고 bash(shell) 만 종료됨.
+==> bash shell 포함 http같이 실행됨.  
+(참고) apache 이미지의 http.conf 파일 위치 확인: cd DocumnetRoot httd.conf  
+==> exec 실행된 컨테이너 에서 exit로 빠져나오면 컨테이는 종료되질 않고 bash(shell) 만 종료됨.  
 
 
 ### 컨테이너 이름 변경
-docker rename <기존이름> <새이름>
+> docker rename <기존이름> <새이름>
 
 
- ### 컨테이너 일시중지/해제
- > docker pause <컨테이너 이름>
- > docker unpause <컨테이너 이름>
+### 컨테이너 일시중지/해제
+> docker pause <컨테이너 이름>
+> docker unpause <컨테이너 이름>
 
- * 전체 컨테이너 정보확인: cpu, memory사용량 등
+### 전체 컨테이너 정보확인: cpu, memory사용량 등  
   docker stats --no-stream
 
 ### 컨테이너 삭제
@@ -231,9 +241,9 @@ docker rename <기존이름> <새이름>
     
 ### 모든 컨테이너 삭제
     docker rm -f $(sudo docker ps -aq) 
-==> -q는 id만 보이기, docker ps -aq: 모든 컨테이너 id 조회
-==> $( docker ps -aq) 리눅스 명령어으로 ()안에서 얻어 id에 대한 모든 컨테이너 대상
-==> 이 명령은 신중하게 모든 컨테이너 삭제됨!!!
+==> -q는 id만 보이기, docker ps -aq: 모든 컨테이너 id 조회  
+==> $( docker ps -aq) 리눅스 명령어으로 ()안에서 얻어 id에 대한 모든 컨테이너 대상  
+==> 이 명령은 신중하게 모든 컨테이너 삭제됨!!!  
 
 
 
@@ -241,17 +251,22 @@ docker rename <기존이름> <새이름>
 
 
 
-### docker host에 있는 file을 넣거나빼기 
+### docker host에 있는 file을 넣거나 빼기 
     docker cp --help
+
 (참고) 
--원격접속해서 파일복사: $ scp host:path
--작업디렉토리 확인하기: sudo docker exec web pwd
+-원격접속해서 파일복사: $ scp host:path  
+-작업디렉토리 확인하기: sudo docker exec web pwd  
   
-경로 확인후 copy
-      sudo docker cp web:/usr/local/apache2/htdocs/index.html . <== .은 현재 디렉코리
-      sudo vi index.html <== 수정후 
-      sudo docker cp index.html web:/usr/local/apache2/htdocs
-      sudo docker exec web cat /usr/local/apache2/htdocs/index.html
+  <br>
+  
+경로 확인후 copy  후
+
+      sudo docker cp web:/usr/local/apache2/htdocs/index.html . <== .은 현재 디렉코리  
+      sudo vi index.html <== 수정후   
+      sudo docker cp index.html web:/usr/local/apache2/htdocs  
+      sudo docker exec web cat /usr/local/apache2/htdocs/index.html  
+
 
 ### 상태변경 확인
 > sudo docker diff <이미지명>
@@ -267,13 +282,13 @@ docker rename <기존이름> <새이름>
 commit, export
 
     docker commit --help
-(주의) [ REPOSTORY[:TAG] ] 룰을 지켜라, 옵션이지만 가능하면 사용하라..
+(주의) [ REPOSTORY[:TAG] ] 룰을 지켜라, 옵션이지만 가능하면 사용하라..  
 
     docker commit web dj/httpd:1
 
 
     sudo docker run -it --name c1 centos:latest
-==>shell bash접속상태.
+==>shell bash접속상태.  
 
 
 #### (1) httpd 설치
@@ -303,6 +318,9 @@ commit, export
 
 <hr/>
 
+  <br>
+  <br>
+  <br>
 
 ## docker 저장소 : 폐쇄망 
 
@@ -310,7 +328,7 @@ commit, export
 > docker save --help
 
     docker save -o save.tar httpd alpine centos 
-==> 이미지 3개(httpd, alpine centos)를 save.tar로 만듬.
+==> 이미지 3개(httpd, alpine centos)를 save.tar로 만듬.  
 
     $ ls
     $ sudo file save.tar
@@ -332,11 +350,22 @@ commit, export
     sudo docker import --help
     sudo docker import <파일>  [ REPOSITORY[:TAG] ]
     sudo dockr import export.tar dj/export:latest
-==> layer가 통합됨으로 1개 존재하고 config설정이 안된 상태임(docker inspect로 확인 가능)
-==> docker run -itd --name e1 dj/export:latest 실행 안됨, 설정안된 상태...
-==> docker run -itd --name e1 dj/export:latest bash
+==> layer가 통합됨으로 1개 존재하고 config설정이 안된 상태임(docker inspect로 확인 가능)  
+==> docker run -itd --name e1 dj/export:latest 실행 안됨, 설정안된 상태...  
+==> docker run -itd --name e1 dj/export:latest bash  
 
     sudo docker commit e1 dj/export:commit <== docker run 시 명령동작 됨.
+
+
+
+
+
+
+
+<hr/>
+  <br>
+  <br>
+  <br>
 
 
 
@@ -349,9 +378,9 @@ commit, export
     $ sudo docker run -itd --name a1 alpine
     $ sudo docker run -itd --name a2 alpine
     $ sudo docker run -itd --name a3 alpine
-여러개 생성후 brctl show 명령어 실행시  interfaces항목이 보임
-==>bridge-utils는 NIC(Network Interface Card) 두개를 하나로 묶어 브릿지로 만들어 주는 역할  
-정식 프로젝트 명칭은 IEEE 802.1d ethernet bridging으로 IEEE의 표준 이더넷 브릿지 구현.  
+여러개 생성후 brctl show 명령어 실행시  interfaces항목이 보임  
+==>bridge-utils는 NIC(Network Interface Card) 두개를 하나로 묶어 브릿지로 만들어 주는 역할   
+정식 프로젝트 명칭은 IEEE 802.1d ethernet bridging으로 IEEE의 표준 이더넷 브릿지 구현.    
         
         
     $ sudo docker network ls
@@ -399,6 +428,15 @@ commit, export
 
 
 
+<hr/>
+  <br>
+  <br>
+  <br>
+
+
+
+
+
 ## docker link
 	$ sudo docker --link 
 ==> 단방향????
@@ -438,6 +476,14 @@ commit, export
 
 
 
+
+<hr/>
+  <br>
+  <br>
+  <br>
+
+
+
 ## docker 포트 지정
 	$ sudo docker run -d --name -p 8080:80 httpd
 
@@ -452,11 +498,16 @@ commit, export
 	sudo firewall-cmd -add (--reload) http
 	systemctl status httpd
 	
-#### 네트워크 사용 port확인
+### 네트워크 사용 port확인
 	sudo ss -ntip
 
 
 
+
+<hr/>
+  <br>
+  <br>
+  <br>
 
 
 ## docker volume
@@ -467,17 +518,17 @@ commit, export
 	$ sudo docker inspect testvol <== volume위치 확인 
 
 
-(참고) sudo -i : sudo 권한으로 접근(root)
+(참고) sudo -i : sudo 권한으로 접근(root)  
 
 	$ cd/var/lib/docker/volumes/testvol/_data
 	
-(참고) pwd : 현재 위치 확인 
+(참고) pwd : 현재 위치 확인   
 
 	sudo docker run -d --name h1 -v testvol:/usr/local/apache2/htdocs -p 80:80 httpd
 
+<br>
 
-
-## disk 추가
+### disk 추가
 	$ lsblk 
 	==> disk 정보보기 
 
@@ -493,11 +544,17 @@ commit, export
 
 	$ sudo docker volume prune <= mount삭제
 
-db는 보통 자동 volume 설정 상태 
-==> inpsect 내 정보 중 volumes 정보있음
+db는 보통 자동 volume 설정 상태   
+==> inpsect 내 정보 중 volumes 정보있음  
 
 
 
+
+
+<hr/>
+  <br>
+  <br>
+  <br>
 
 
 ## Container log 확인
@@ -505,10 +562,11 @@ db는 보통 자동 volume 설정 상태
 	$ sudo docker logs -t d1 <-t time...
 ==>MYSQL_RANDOM_ROOT_PASSWORD: 사용 비번막기..  
 
-mysql:5.7내 inspect설정 정보중 Entrypoint 설정 예: docker-entrypoint.sh를 실행 설정상태  
+mysql:5.7내 inspect설정 정보중 Entrypoint 설정 예: docker-entrypoint.sh를 실행 설정상태    
 
+<br>
 
-우선순위: Entrypoint > Cmd ???  
+우선순위: Entrypoint > Cmd ???    
 
 	sudo docker cp sharp
 
@@ -537,9 +595,20 @@ mysql:5.7내 inspect설정 정보중 Entrypoint 설정 예: docker-entrypoint.sh
 
 
 
+
+
+<hr/>
+  <br>
+  <br>
+  <br>
+
+
+
+
 ## docker 자원제한
 
 ### container 메모리 제한
+
 	$ sudo docker stats --no-stream <== 실행중인 컨테이너 정보한 보기
 	$ free -h
 
@@ -573,7 +642,8 @@ mysql:5.7내 inspect설정 정보중 Entrypoint 설정 예: docker-entrypoint.sh
 
 
 
-
+<br>
+<br>
 
 
 ### container cpu 제한
@@ -601,6 +671,7 @@ mysql:5.7내 inspect설정 정보중 Entrypoint 설정 예: docker-entrypoint.sh
 	d0b06c61a2b3        a2                  0.00%               132KiB / 1.952GiB   0.01%               656B / 0B           0B / 0B             1
 	843257bd67e6        a1                  0.00%               128KiB / 1.952GiB   0.01%               656B / 0B           0B / 0B             1
 
+<br>
 
 #### 임의로 CPU 사용량 증가 TEST
 > $ sudo docker exec a1 dd if=/dev/zero of=/dev/null & 
@@ -614,6 +685,8 @@ mysql:5.7내 inspect설정 정보중 Entrypoint 설정 예: docker-entrypoint.sh
 
 
 
+<br>
+<br>
 
 ### 쓰기 제한
 참고: 교재: 68page
@@ -622,12 +695,20 @@ mysql:5.7내 inspect설정 정보중 Entrypoint 설정 예: docker-entrypoint.sh
 
 
 
+
+<hr/>
+  <br>
+  <br>
+  <br>
+  
+  
+  
 ## Docker file
 (작업 프로세스)
--mkdir centweb  : centweb 디렉토리만들기
--cd centweb/    : 디렉토리 접근
--vi Dockerfile  : Dockerfile 작성
--cat Dockerfile : Dockerfile 내용 확인
+-mkdir centweb  : centweb 디렉토리만들기    
+-cd centweb/    : 디렉토리 접근  
+-vi Dockerfile  : Dockerfile 작성  
+-cat Dockerfile : Dockerfile 내용 확인  
 
 ### Dockerfile 작성 규칙
 	FROM centos:latest <==base이미지지정, 2개이상도 지정가능하나, 기본 1개만 지정
@@ -659,6 +740,7 @@ mysql:5.7내 inspect설정 정보중 Entrypoint 설정 예: docker-entrypoint.sh
 	pwd
 	/etc/sudoers.d
 
+<br><br>
 
 *Traditionally, the Dockerfile is called Dockerfile and located in the root of the context. You use the -f flag with docker build to point to a Dockerfile anywhere in your file system.  
 
@@ -677,6 +759,13 @@ mysql:5.7내 inspect설정 정보중 Entrypoint 설정 예: docker-entrypoint.sh
 
 
 
+<hr/>
+  <br>
+  <br>
+  <br>
+  
+  
+
 ## 저장소 만들기
 
 	$ docker run -d -p 5000:5000 --restart always --name registry registry:2 
@@ -690,7 +779,7 @@ mysql:5.7내 inspect설정 정보중 Entrypoint 설정 예: docker-entrypoint.sh
 	==> localhost:5000/리포지토리이름/이미지명:태그  
 	$ sudo docker push localhost:5000/centos:web
 
-
+<br>
 
 	sudo docker tag alpine docker.nobreak.co.kr:5000/alpine:cccr
 	==> 에러발생함, 인증서 필요.
@@ -702,6 +791,14 @@ mysql:5.7내 inspect설정 정보중 Entrypoint 설정 예: docker-entrypoint.sh
 
 
 
+
+<hr/>
+  <br>
+  <br>
+  <br>
+  
+  
+  
 ## 멀티 컨테이너 관리: Docker Dompose
 docker는 기본 단일 host로 관리 됨~ㅠㅠ  
 
@@ -709,29 +806,34 @@ docker는 기본 단일 host로 관리 됨~ㅠㅠ
 다수의 컨테이너를 하나로 통합하여 관리할 수 있는 도구  
 
 
-#### 설치
+#### (1) 설치
 	sudo curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 	
-#### 권한설정:
+#### (2) 권한설정:
 	sudo chmod +x /usr/local/bin/docker-compose
 	
-#### 버전확인 : 
+#### (3) 버전확인 : 
 	docker-compose --version
 
 
 (참고)
-compose-file 의 services는 컨테이너 이름과 틀리다!!!!, services는 다수 존재가능하며, 별도 이름지정할 필요는 없음.  
+compose-file 의 services는 컨테이너 이름과 틀리다!!!!, services는 다수 존재가능하며, 별도 이름지정할 필요는 없음.   
 
 
 
-
+<hr/>
+  <br>
+  <br>
+  <br>
+  
+  
 ## 멀티 호스트 관리: docker swarm
 
 https://docs.docker.com/engine/reference/commandline/swarm_init/
 
 
 
-(dockerDir)폴더 모두 삭제
+(dockerDir)폴더 모두 삭제  
 
 	$ rm -rf dockerDir  <= 리눅스 명령
 
