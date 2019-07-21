@@ -357,283 +357,305 @@ commit, export
 
 
     $ sudo docker network create --subnet 192.168.0.0/24 net1
-cidi표기법:ip주소/subnet ~255를 > prefix로 벼환시 24개
+	cidi표기법:ip주소/subnet ~255를 > prefix로 벼환시 24개
 
-$ sudo docker network ls
-$ brctl show
+	$ sudo docker network ls
+	$ brctl show
 
- sudo docker network ls
+	 sudo docker network ls
 
-$ sudo docker run -itd --name a2 --network net1 alpine
-sudo docker exec a2 ??
-sudo docker run -d --name h1 httpd
-sudo docker exec a1 ping 172.17.0.2
+	$ sudo docker run -itd --name a2 --network net1 alpine
+	sudo docker exec a2 ??
+	sudo docker run -d --name h1 httpd
+	sudo docker exec a1 ping 172.17.0.2
 
-** network 연결 : 커스텀 네트워크이려, 내부에 dns프로세스 동작됨(양방향 통신????)
-sudo docker network connect --help
-sudo docker network connect net1 h1 <= net1, h1 연결 후
-($sudo docker network connect net1 web)
-sudo docker inspect net1  <== insept 로 내용확인 하면 net1 ip, h1 네트워크 정보 확인과 연결 네트워크 정보 확인 후 해당연결 IP확인으로 통신 가능
+### network 연결
+커스텀 네트워크 연결, 내부에 dns프로세스 동작됨(양방향 통신????)
 
-$ sudo docker exec a32 ping 192.168.0.3 <== a32에서 web(h1-192.168.0.3-) 으로 ping 실행으로 연결됨 확인...
+	sudo docker network connect --help
+	sudo docker network connect net1 h1 <= net1, h1 연결 후
+	($sudo docker network connect net1 web)
+	sudo docker inspect net1  
+	==> insept 로 내용확인 하면 net1 ip, h1 네트워크 정보 확인과 연결 네트워크 정보 확인 후 해당연결 IP확인으로 통신 가능
 
+	$ sudo docker exec a32 ping 192.168.0.3 <== a32에서 web(h1-192.168.0.3-) 으로 ping 실행으로 연결됨 확인...
 
 
 
 
 
 
-***** link ********************************************************************
-$ sudo docker --link <==단방향????
+## docker link
+	$ sudo docker --link 
+==> 단방향????
 
-[devops@docker ~]$ sudo docker run -itd --name a1 alpine
-45c0857da0f64907e50b4af2054a146b083a31f0c3458b61e92a879ca8ccb3c4
-^[[A[devops@docker ~]$ sudo docker run -itd --name a2  alpine
-3ba79bbbbadc97f622c14bf3572ae60354ac0e5fe552cb9634b65b9e3282af1a
-[devops@docker ~]$ sudo docker rm -f a1
-a1
-[devops@docker ~]$ sudo docker run -itd --link a2 --name a1 alpine
-0568afcd7ed85f0ec6cd32299168483b715dedfd7062612519456c117c82bf0c
-==> a1에서 a2로 연결 참고: a2가 db역활
+	$ sudo docker run -itd --name a1 alpine
+	45c0857da0f64907e50b4af2054a146b083a31f0c3458b61e92a879ca8ccb3c4
+	
+	$ sudo docker run -itd --name a2  alpine
+	3ba79bbbbadc97f622c14bf3572ae60354ac0e5fe552cb9634b65b9e3282af1a
+	
+	$ sudo docker rm -f a1
+	a1
+	
+	$ sudo docker run -itd --link a2 --name a1 alpine
+	0568afcd7ed85f0ec6cd32299168483b715dedfd7062612519456c117c82bf0c
+	==> a1에서 a2로 연결 참고: a2가 db역할
 
-sudo docker exec a1 ping -c3 a2
 
-sudo docker exec a1 cat /etc/hosts
+	$ sudo docker exec a1 ping -c3 a2
+	
+	$ sudo docker exec a1 cat /etc/hosts
+	
+	$ sudo docker exec a2 ping -c3 a1
 
-sudo docker exec a2 ping -c3 a1
 
+	sudo docker run -itd --link a2:db --name a1 alpine <= 별칭 지정: :db
+	sudo docker exec a1 ping -c3 db
 
-sudo docker run -itd --link a2:db --name a1 alpine <<= 별칭 지정: :db
-sudo docker exec a1 ping -c3 db
+	$ sudo docker exec a3 cat /etc/hosts
+	127.0.0.1	localhost
+	::1	localhost ip6-localhost ip6-loopback
+	fe00::0	ip6-localnet
+	ff00::0	ip6-mcastprefix
+	ff02::1	ip6-allnodes
+	ff02::2	ip6-allrouters
 
-[devops@docker ~]$ sudo docker exec a3 cat /etc/hosts
-127.0.0.1	localhost
-::1	localhost ip6-localhost ip6-loopback
-fe00::0	ip6-localnet
-ff00::0	ip6-mcastprefix
-ff02::1	ip6-allnodes
-ff02::2	ip6-allrouters
 
 
 
+## docker 포트 지정
+	$ sudo docker run -d --name -p 8080:80 httpd
 
-** 포트 지정 *******************************************************************************
-$ sudo docker run -d --name -p 8080:80 httpd
 
+	hotsnamectl set -????
 
 
+	$ ip a s eth0 <== 네트워크 확인
 
-hotsnamectl set -????
 
+### 방화벽 열기: 
+	sudo firewall-cmd -add (--reload) http
+	systemctl status httpd
+	
+#### 네트워크 사용 port확인
+	sudo ss -ntip
 
-$ ip a s eth0 <== 네트워크 확인
-docker 
 
-방화벽 열기: sudo firewall-cmd -add (--reload) http
-systemctl status httpd
-네으워크 사용port확인; sudo ss -ntip
 
 
 
+## docker volume
 
+	$ sudo docker volume ls
+	$ sudo docker volume create testvol
+	$ sudo docker volume ls
+	$ sudo docker inspect testvol <== volume위치 확인 
 
-******************** volume ***********************************************************
 
-$ sudo docker volume ls
-$ sudo docker volume create testvol
-$ sudo docker volume ls
-$ sudo docker inspect testvol <== volume위치 확인 
+(참고) sudo -i : sudo 권한으로 접근(root)
 
+	$ cd/var/lib/docker/volumes/testvol/_data
+	
+(참고) pwd : 현재 위치 확인 
 
-sudo -i < sudo 권한으로 접근(root)
-$ cd/var/lib/docker/volumes/testvol/_data
-pwd <- 현재 위치 확인 
-sudo docker run -d --name h1 -v testvol:/usr/local/apache2/htdocs -p 80:80 httpd
+	sudo docker run -d --name h1 -v testvol:/usr/local/apache2/htdocs -p 80:80 httpd
 
 
 
-**disk 추가
-$ lsblk <== disk 정보보기 
+## disk 추가
+	$ lsblk 
+	==> disk 정보보기 
 
 
-$ sudo docker run -d -it --name c1 -v centvol:/tmp/dira centos
-$ df -h <==현재 사용량 정보보기 
+	$ sudo docker run -d -it --name c1 -v centvol:/tmp/dira centos
+	$ df -h <==현재 사용량 정보보기 
 
-$ sudo docker run -itd --name c2 -v vol1:/tmp/vol1:ro centos <== :ro는 read only 옵션
+	$ sudo docker run -itd --name c2 -v vol1:/tmp/vol1:ro centos <== :ro는 read only 옵션
 
-sudo docker exec c1 'mount' | grep vol1'
-sudo docker exec mount c1
+	sudo docker exec c1 'mount' | grep vol1'
+	sudo docker exec mount c1
 
 
-$ sudo docker volume prune <= mount삭제
+	$ sudo docker volume prune <= mount삭제
 
-***db는 보통 자동 volume설정 상태 < inpsect 내 정보 중 volumes 정보있음
+db는 보통 자동 volume 설정 상태 
+==> inpsect 내 정보 중 volumes 정보있음
 
 
 
 
 
-******* container log확인 ****************************
-$ sudo docker logs -t d1 <-t time...
+## Container log 확인
 
-==>MYSQL_RANDOM_ROOT_PASSWORD: 사용 비번막기..
+	$ sudo docker logs -t d1 <-t time...
+==>MYSQL_RANDOM_ROOT_PASSWORD: 사용 비번막기..  
 
-mysql:5.7내 inspect설정 정보중 Entrypoint 설저예 docker-entrypoint.sh를 실행 설정ㅅㅇ태
+mysql:5.7내 inspect설정 정보중 Entrypoint 설정 예: docker-entrypoint.sh를 실행 설정상태  
 
 
-우선순위: Entrypoint > Cmd ???
+우선순위: Entrypoint > Cmd ???  
 
-sudo docker cp sharp
+	sudo docker cp sharp
 
 
 
-[devops@docker ~]$ sudo docker ps -a
-CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                      PORTS               NAMES
-0897e2840a43        mysql:5.7           "docker-entrypoint.s…"   24 minutes ago      Exited (1) 24 minutes ago                       d1
-[devops@docker ~]$ sudo docker logs -t d1
-2019-07-09T15:37:48.524148988Z error: database is uninitialized and password option is not specified 
-2019-07-09T15:37:48.524224646Z   You need to specify one of MYSQL_ROOT_PASSWORD, MYSQL_ALLOW_EMPTY_PASSWORD and MYSQL_RANDOM_ROOT_PASSWORD
+	$ sudo docker ps -a
+	CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                      PORTS               NAMES
+	0897e2840a43        mysql:5.7           "docker-entrypoint.s…"   24 minutes ago      Exited (1) 24 minutes ago                       d1
+	
+	$ sudo docker logs -t d1
+	2019-07-09T15:37:48.524148988Z error: database is uninitialized and password option is not specified 
+	2019-07-09T15:37:48.524224646Z   You need to specify one of MYSQL_ROOT_PASSWORD, MYSQL_ALLOW_EMPTY_PASSWORD and MYSQL_RANDOM_ROOT_PASSWORD
 
-[devops@docker ~]$ sudo docker run -d --name d2 -e 'MYSQL_ROOT_PASSWORD=1234' mysql:5.7
-a9e6b3dab4b6209e70d52fa4dfd41f4ca905f3804979e9e8bc94ba1470b26d45
-[devops@docker ~]$ sudo docker ps
-CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                 NAMES
-a9e6b3dab4b6        mysql:5.7           "docker-entrypoint.s…"   9 seconds ago       Up 7 seconds        3306/tcp, 33060/tcp   d2
-[devops@docker ~]$ sudo docker top d2
-UID                 PID                 PPID                C                   STIME               TTY                 TIME                CMD
-polkitd             214
+	$ sudo docker run -d --name d2 -e 'MYSQL_ROOT_PASSWORD=1234' mysql:5.7
+	a9e6b3dab4b6209e70d52fa4dfd41f4ca905f3804979e9e8bc94ba1470b26d45
+	
+	$ sudo docker ps
+	CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                 NAMES
+	a9e6b3dab4b6        mysql:5.7           "docker-entrypoint.s…"   9 seconds ago       Up 7 seconds        3306/tcp, 33060/tcp   d2
+	
+	$ sudo docker top d2
+	UID                 PID                 PPID                C                   STIME               TTY                 TIME                CMD
+	polkitd             214
 
 
 
 
 
-***** docker 자원제한
+## docker 자원제한
 
-* container 메모리 제한----------------------------------
-$ sudo docker stats --no-stream <== 실행중인 컨테이너 정보한 보기
-$ free -h
+### container 메모리 제한
+	$ sudo docker stats --no-stream <== 실행중인 컨테이너 정보한 보기
+	$ free -h
 
 
-[devops@docker ~]$ sudo docker run -d --name h1 --memory=512M httpd
-715a2c25b02405d128c0c62bce1b2bed98469017a31268c5bae433b2e5240c40
-[devops@docker ~]$ sudo docker stats --no-stream
-CONTAINER ID        NAME                CPU %               MEM USAGE / LIMIT   MEM %               NET I/O             BLOCK I/O           PIDS
-715a2c25b024        h1                  0.02%               2.293MiB / 512MiB   0.45%               656B / 0B           0B / 0B             82
-[devops@docker ~]$ 
+	$ sudo docker run -d --name h1 --memory=512M httpd
+	715a2c25b02405d128c0c62bce1b2bed98469017a31268c5bae433b2e5240c40
+	
+	$ sudo docker stats --no-stream
+	CONTAINER ID        NAME                CPU %               MEM USAGE / LIMIT   MEM %               NET I/O             BLOCK I/O           PIDS
+	715a2c25b024        h1                  0.02%               2.293MiB / 512MiB   0.45%               656B / 0B           0B / 0B             82
+	[devops@docker ~]$ 
 
-[devops@docker ~]$ sudo docker update h1 --memory=768M <== 메모리 수정 
-h1
-[devops@docker ~]$ sudo docker stats --no-stream
-CONTAINER ID        NAME                CPU %               MEM USAGE / LIMIT   MEM %               NET I/O             BLOCK I/O           PIDS
-715a2c25b024        h1                  0.02%               2.293MiB / 768MiB   0.30%               656B / 0B           0B / 0B             82
-[devops@docker ~]$ 
-[devops@docker ~]$ sudo docker update h1 --memory=1025M <== 초과지정시 에러발생 , 용량을 최대값을 늘릴려면 inspect내 memory-swap값을 수정
-Error response from daemon: Cannot update container 715a2c25b02405d128c0c62bce1b2bed98469017a31268c5bae433b2e5240c40: Memory limit should be smaller than already set memoryswap limit, update the memoryswap at the same time
+	
+	$ sudo docker update h1 --memory=768M <== 메모리 수정 
+	h1
+	
+	$ sudo docker stats --no-stream
+	CONTAINER ID        NAME                CPU %               MEM USAGE / LIMIT   MEM %               NET I/O             BLOCK I/O           PIDS
+	715a2c25b024        h1                  0.02%               2.293MiB / 768MiB   0.30%               656B / 0B           0B / 0B             82
+	
+	$ sudo docker update h1 --memory=1025M <== 초과지정시 에러발생 , 용량을 최대값을 늘릴려면 inspect내 memory-swap값을 수정
+	Error response from daemon: Cannot update container 715a2c25b02405d128c0c62bce1b2bed98469017a31268c5bae433b2e5240c40: Memory limit should be smaller than already set memoryswap limit, update the memoryswap at the same time
 
-[devops@docker ~]$ sudo docker update h1 --memory=1025M --memory-swap=1400M
-h1
-[devops@docker ~]$ sudo docker stats --no-stream
-CONTAINER ID        NAME                CPU %               MEM USAGE / LIMIT     MEM %               NET I/O             BLOCK I/O           PIDS
-715a2c25b024        h1                  0.03%               2.293MiB / 1.001GiB   0.22%               656B / 0B           0B / 0B             82
-[devops@docker ~]$ 
+	$ sudo docker update h1 --memory=1025M --memory-swap=1400M
+	h1
+	
+	
+	$ sudo docker stats --no-stream
+	CONTAINER ID        NAME                CPU %               MEM USAGE / LIMIT     MEM %               NET I/O             BLOCK I/O           PIDS
+	715a2c25b024        h1                  0.03%               2.293MiB / 1.001GiB   0.22%               656B / 0B           0B / 0B             82
 
 
 
 
 
-* container cpu 제한 ------------------------------------------------
-docker run -itd --name a1 -c 10 이미지명 < -c 10 cpu를 10% 할당
 
+### container cpu 제한
+	docker run -itd --name a1 -c 10 이미지명 <== -c 10 cpu를 10% 할당
 
-[devops@docker ~]$ sudo docker run -itd --name a1 -c 10 alpine
-843257bd67e67a1afc92ec67d1b4f141da9e0450dda338dcb4f82a0c1a66ef28
-[devops@docker ~]$ sudo docker run -itd --name a2 -c 10 alpine
-d0b06c61a2b36a0daa56216c6b72d35c9755200602d72f470ac14105678d1fa3
-^[[A^[[A[devops@docker ~]$ sudo docker run -itd --name a3 -c 20 alpine
-0411df22c2fa8f0d6d62f60ab73e038e18d7b896f7ad07c4fecaafb15619ad83
-[devops@docker ~]$ sudo docker ps -a
-CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
-0411df22c2fa        alpine              "/bin/sh"           11 seconds ago      Up 9 seconds                            a3
-d0b06c61a2b3        alpine              "/bin/sh"           20 seconds ago      Up 19 seconds                           a2
-843257bd67e6        alpine              "/bin/sh"           32 seconds ago      Up 30 seconds                           a1
-[devops@docker ~]$ sudo docker stats --no-stream
-CONTAINER ID        NAME                CPU %               MEM USAGE / LIMIT   MEM %               NET I/O             BLOCK I/O           PIDS
-0411df22c2fa        a3                  0.00%               128KiB / 1.952GiB   0.01%               656B / 0B           0B / 0B             1
-d0b06c61a2b3        a2                  0.00%               132KiB / 1.952GiB   0.01%               656B / 0B           0B / 0B             1
-843257bd67e6        a1                  0.00%               128KiB / 1.952GiB   0.01%               656B / 0B           0B / 0B             1
 
+	$ sudo docker run -itd --name a1 -c 10 alpine
+	843257bd67e67a1afc92ec67d1b4f141da9e0450dda338dcb4f82a0c1a66ef28
+	
+	$ sudo docker run -itd --name a2 -c 10 alpine
+	d0b06c61a2b36a0daa56216c6b72d35c9755200602d72f470ac14105678d1fa3
+	
+	$ sudo docker run -itd --name a3 -c 20 alpine
+	0411df22c2fa8f0d6d62f60ab73e038e18d7b896f7ad07c4fecaafb15619ad83
+	
+	$ sudo docker ps -a
+	CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+	0411df22c2fa        alpine              "/bin/sh"           11 seconds ago      Up 9 seconds                            a3
+	d0b06c61a2b3        alpine              "/bin/sh"           20 seconds ago      Up 19 seconds                           a2
+	843257bd67e6        alpine              "/bin/sh"           32 seconds ago      Up 30 seconds                           a1
+	
+	$ sudo docker stats --no-stream
+	CONTAINER ID        NAME                CPU %               MEM USAGE / LIMIT   MEM %               NET I/O             BLOCK I/O           PIDS
+	0411df22c2fa        a3                  0.00%               128KiB / 1.952GiB   0.01%               656B / 0B           0B / 0B             1
+	d0b06c61a2b3        a2                  0.00%               132KiB / 1.952GiB   0.01%               656B / 0B           0B / 0B             1
+	843257bd67e6        a1                  0.00%               128KiB / 1.952GiB   0.01%               656B / 0B           0B / 0B             1
 
 
-$ sudo docker exec a1 dd if=/dev/zero of=/dev/null &   <==임의로 cpu사용량 증가 test 
+#### 임의로 CPU 사용량 증가 TEST
+> $ sudo docker exec a1 dd if=/dev/zero of=/dev/null & 
 
-[devops@docker ~]$ sudo docker exec a1 dd if=/dev/zero of=/dev/null &
-[devops@docker ~]$ sudo docker exec a2 dd if=/dev/zero of=/dev/null &
-[devops@docker ~]$ sudo docker exec a3 dd if=/dev/zero of=/dev/null &
+	$ sudo docker exec a1 dd if=/dev/zero of=/dev/null &
+	$ sudo docker exec a2 dd if=/dev/zero of=/dev/null &
+	$ sudo docker exec a3 dd if=/dev/zero of=/dev/null &
 
-$ sudo docker stats -a --all <==실시간 사용량 확인 
+#### 실시간 사용량 확인 
+	$ sudo docker stats -a --all
 
 
 
 
-
-**** 쓰기 제한 ************************************************88
+### 쓰기 제한
 참고: 교재: 68page
 
 
 
-*** 워드프레스 구성 **********************************
+
+
+## Docker file
+(작업 프로세스)
+-mkdir centweb  : centweb 디렉토리만들기
+-cd centweb/    : 디렉토리 접근
+-vi Dockerfile  : Dockerfile 작성
+-cat Dockerfile : Dockerfile 내용 확인
+
+### Dockerfile 작성 규칙
+	FROM centos:latest <==base이미지지정, 2개이상도 지정가능하나, 기본 1개만 지정
+	MAINTAINER	<== 작성자 지정
+	RUN yum -y install httpd <==RUN: 명령어 지정, 형식 2가지(shell, exec)있으나 어떤가 사용ㅎ도 무방
+	CMD /usr/sbin/httpd -DFOREGROND <==CMD: 데몬 실행, 한 개의 지시어만 사용 가능 (형식: run과 같은 shell, exec 2가지)
+	LABEL : 라벨설정
+	EXPOSE	: 포트 내보기
+	ENV <= 환경변수 설정, Key, value를 지정(2가지 형식: 1) 공백으로 구분 KEY VALUE, 형식 2) =으로 구분 KEY=VALUE 단, value값에 공백이 있으면 앞에 '\' 붙여야 함.
+	ADD <== 파일 추가
+	COPY <== 파일복사
+	VOLUME <== 볼륨 마운트
+	ENTRYPOINT <== 데몬 실행, CMD 실행전에 사전 실행지정(예: web서버전에 db실행 지정 등...)
+	USER <= 사용자 설정(USER NAME(or UID)), 
+		(특정 사용자가 실행가능하도록 저정 예) 
+				RUN user add test 
+				USER test
+	WORKDIR <== 작업 디렉토리 지정(RUN, CMD, ENTRYPOINT, COPY, ADD 명령을 실행을 위한 지정)
+	ONBUILD <== build 후 실행 명령, 베이스 이미지를 기반으로 다른 이미지를 생성할대 실행 되도록 지정 (예: ONBUILD RUN touch /tmp/filea,  ONBUILD ADD index.html /var/www/html)
+
+
+	$ docker build -t base:1.0(이미지명) /root/file/ 
+	==> /root/file : Dockerfile존재경로 
 
 
 
-*** docker file***************************************
-mkdir centweb
-cd centweb/
-vi Dockerfile
-cat Dockerfile
-
-*Dockerfile 작성 규칙...==========================================================================
-------------------------------------------------------------------------------------------------
-FROM centos:latest <==base이미지지정, 2개이상도 지정가능하나, 기본 1개만 지정
-MAINTAINER	<== 작성자 지정
-RUN yum -y install httpd <==RUN: 명령어 지정, 형식 2가지(shell, exec)있으나 어떤가 사용ㅎ도 무방
-CMD /usr/sbin/httpd -DFOREGROND <==CMD: 데몬 실행, 한 개의 지시어만 사용 가능 (형식: run과 같은 shell, exec 2가지)
-LABEL : 라벨설정
-EXPOSE	: 포트 내보기
-ENV <= 환경변수 설정, Key, value를 지정(2가지 형식: 1) 공백으로 구분 KEY VALUE, 형식 2) =으로 구분 KEY=VALUE 단, value값에 공백이 있으면 앞에 '\' 붙여야 함.
-ADD <== 파일 추가
-COPY <== 파일복사
-VOLUME <== 볼륨 마운트
-ENTRYPOINT <== 데몬 실행, CMD 실행전에 사전 실행지정(예: web서버전에 db실행 지정 등...)
-USER <= 사용자 설정(USER NAME(or UID)), 
-	(특정 사용자가 실행가능하도록 저정 예) 
-        	RUN user add test 
-        	USER test
-WORKDIR <== 작업 디렉토리 지정(RUN, CMD, ENTRYPOINT, COPY, ADD 명령을 실행을 위한 지정)
-ONBUILD <== build 후 실행 명령, 베이스 이미지를 기반으로 다른 이미지를 생성할대 실행 되도록 지정 (예: ONBUILD RUN touch /tmp/filea,  ONBUILD ADD index.html /var/www/html)
-------------------------------------------------------------------------------------------------
-
-$ docker build -t base:1.0(이미지명) /root/file/ <= Dockerfile존재경로 
+	cat devops
+	devops ALL=(ALL) NOPASSWD: ALL
+	pwd
+	/etc/sudoers.d
 
 
+*Traditionally, the Dockerfile is called Dockerfile and located in the root of the context. You use the -f flag with docker build to point to a Dockerfile anywhere in your file system.  
 
-cat devops
-devops ALL=(ALL) NOPASSWD: ALL
-pwd
-/etc/sudoers.d
+	==> $ docker build -f /path/to/a/Dockerfile .
 
+*You can specify a repository and tag at which to save the new image if the build succeeds:
 
-
-
+	==> $ docker build -t shykes/myapp .
 
 
-*Traditionally, the Dockerfile is called Dockerfile and located in the root of the context. You use the -f flag with docker build to point to a Dockerfile anywhere in your file system.
-==> $ docker build -f /path/to/a/Dockerfile .
-
-* You can specify a repository and tag at which to save the new image if the build succeeds:
-==> $ docker build -t shykes/myapp .
-
-
-sudo docker run -it --name c1 dockerfile:centweb
+	sudo docker run -it --name c1 dockerfile:centweb
 
 
 
@@ -641,81 +663,87 @@ sudo docker run -it --name c1 dockerfile:centweb
 
 
 
-**** 저장소 만들기 ************************************************************************************
+## 저장소 만들기
 
-$ docker run -d -p 5000:5000 --restart always --name registry registry:2 <== --restart always: 도커 재시작 해도 실행 되도록..
+	$ docker run -d -p 5000:5000 --restart always --name registry registry:2 
+	==> --restart always: 도커 재시작 해도 실행 되도록..
 
-$ docker run -d -p 5000:5000 --restart always --name -v regvol:/var/lib/registry  registry registry:2 <== 저장위치 지정 
+	$ docker run -d -p 5000:5000 --restart always --name -v regvol:/var/lib/registry  registry registry:2 
+	==> -v regvol:/var/lib/registry : 저장위치 지정 
 
-$ sudo docker tag test:shell localhost:5000/centos/web  <== test:shell($ sudo docker images결과에서 나타나는 REPOSITORY:TAG), localhost:5000/리포지토리이름/이미지명:태그
-$ sudo docker push localhost:5000/centos:web
-
-
-
-sudo docker tag alpine docker.nobreak.co.kr:5000/alpine:cccr
-==> 에러발생함, 인증서 필요.
-
-인증서 파일 만들기.(docker insecure 인시큐어 ) <= https://docs.docker.com/registry/insecure/
-파일작성시 DNS 수정이 필요하나 불가로 host파일 수정(vi /etc/hosts) <= 수정 후 systemctl restaret docker로 재시작.
+	$ sudo docker tag test:shell localhost:5000/centos/web  
+	==> test:shell($ sudo docker images결과에서 나타나는 REPOSITORY:TAG)  
+	==> localhost:5000/리포지토리이름/이미지명:태그  
+	$ sudo docker push localhost:5000/centos:web
 
 
 
+	sudo docker tag alpine docker.nobreak.co.kr:5000/alpine:cccr
+	==> 에러발생함, 인증서 필요.
 
-
-******* 멀티 컨테이너 관리 ************************************888
-docker는 기본 단일 host로 관리 됨~ㅠㅠ
-Dockr Compose: 다수의 컨테이너를 하나로 통합하여 관리할 수 있는 도구
-
-
-설치: sudo curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-권한설정: sudo chmod +x /usr/local/bin/docker-compose
-버전확인 : docker-compose --version
+인증서 파일 만들기.(docker insecure 인시큐어 ) <= https://docs.docker.com/registry/insecure/  
+파일작성시 DNS 수정이 필요하나 불가로 host파일 수정(vi /etc/hosts) <= 수정 후 systemctl restaret docker로 재시작.  
 
 
 
 
-compose-file 의 services는 컨테이너 이름과 틀리다!!!!, services는 다수 존재가능하며, 별도 이름지정할 필요는 없음.
+
+## 멀티 컨테이너 관리: Docker Dompose
+docker는 기본 단일 host로 관리 됨~ㅠㅠ  
+
+### Dockr Compose
+다수의 컨테이너를 하나로 통합하여 관리할 수 있는 도구  
+
+
+#### 설치
+	sudo curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+	
+#### 권한설정:
+	sudo chmod +x /usr/local/bin/docker-compose
+	
+#### 버전확인 : 
+	docker-compose --version
+
+
+(참고)
+compose-file 의 services는 컨테이너 이름과 틀리다!!!!, services는 다수 존재가능하며, 별도 이름지정할 필요는 없음.  
 
 
 
 
-**************** 멀티 호스트 관리: docker swarm ****************************************8
+## 멀티 호스트 관리: docker swarm
 
 https://docs.docker.com/engine/reference/commandline/swarm_init/
 
 
 
+(dockerDir)폴더 모두 삭제
+
+	$ rm -rf dockerDir  <= 리눅스 명령
+
+
+
+(참고): ls _manifests/ 
+https://docs.docker.com/engine/reference/commandline/manifest_inspect/
 
 
 
 
 
 
+<hr/>
 
+[참고]
 
+	sudo ps -ef | grep bash
+	ps $$
+	sudo kill -9 3030
 
-
-rm -rf dockerDir  <= dockerDir폴더 모두 삭제처리..
-
-
-
-참고: ls _manifests/ 
-
-
-
-
-
-
-
-[참고]---------------------------------------
-sudo ps -ef | grep bash
-ps $$
-sudo kill -9 3030
-
-cat > index.html : index.html 바로수정 됨(입력글자) <= 비권장 
+	cat > index.html : index.html 바로수정 됨(입력글자) <= 비권장 
 
 웹서버 용량비교: httpd:alpine(5.5MB), centos(202MB)
----------------------------------------
+
+<hr/>
 
 
 [참고]
