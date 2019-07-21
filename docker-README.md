@@ -237,13 +237,14 @@ hard link를 붙인다는 의미
 ### 쉡접속명령
     sudo docker attach <컨테이너명>
     
-### doker volume ls
+### docker volume ls
 
 ###  curl ip : 서비스 내용 확인(예: html소스보임)
 
 
 
-### 컨테이너에서 실행되고 있는 프로세스 목록을 출력
+### Container 프로세스(애플리케이션) 목록 확인
+컨테이너에서 실행되고 있는 프로세스 목록 확인
 > docker top <컨테이너 이름, ID> <ps 옵션> 
 
 ==> host기준으로 보임    
