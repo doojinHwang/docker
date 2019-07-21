@@ -75,6 +75,7 @@ host의 리소스를 공유
     
 ### docker이미지 다운로드 
 > docker pull 이미지(허브ID(저장소ID)/이미지명:태그)
+
 ==> 저장소ID 생략시 기본 docker hub id
 
     $ docker pull httpd:latest
@@ -90,6 +91,7 @@ host의 리소스를 공유
 > docker start 이미지
 
 > docker start -a(attach) 이미지명
+
 ==> shell 명령  
 
 > docker start -ai 이미지명   
@@ -115,7 +117,7 @@ ctrl + p + q : 실행 컨테이너가 종료하질 않고 bash만 빠져나욤
 
     docker run -d --name web httpd:latest
 ==> -d: background로 실행, -it: shell 명령실행 
-
+  
 (참고) -d옵션으로 실행후 다시 컨테이너 접근시: docker attach 이미지명 
 
     docker attach web
@@ -192,8 +194,9 @@ hard link를 붙인다는 의미
 
 
 ### 컨테이너에서 실행되고 있는 프로세스 목록을 출력
-> docker top <컨테이너 이름, ID> <ps 옵션>  
-host기준으로 보임    
+> docker top <컨테이너 이름, ID> <ps 옵션> 
+
+==> host기준으로 보임    
 ==> -ef 많이 사용  
 
 (참고: ps 옵션)  
@@ -210,10 +213,12 @@ host기준으로 보임
 
 ### 실행중인 컨테이너 수정  
  > sudo docker exec <컨테이너명>  
+ 
  -i -t 옵션 많이 사용  
  
     $ sudo docker exec -it web bash
 ==> bash shell 포함 http같이 실행됨.  
+
 (참고) apache 이미지의 http.conf 파일 위치 확인: cd DocumnetRoot httd.conf  
 ==> exec 실행된 컨테이너 에서 exit로 빠져나오면 컨테이는 종료되질 않고 bash(shell) 만 종료됨.  
 
@@ -414,7 +419,7 @@ commit, export
 	sudo docker exec a1 ping 172.17.0.2
 
 ### network 연결
-커스텀 네트워크 연결, 내부에 dns프로세스 동작됨(양방향 통신????)
+커스텀 네트워크 연결, 내부에 dns프로세스 동작됨(양방향 통신????)  
 
 	sudo docker network connect --help
 	sudo docker network connect net1 h1 <= net1, h1 연결 후
