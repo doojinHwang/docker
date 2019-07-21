@@ -115,22 +115,26 @@ powerShell, cmd에서 docker 실행시 error발생시 권한설정필요.
 
     $ docker search cnetos
     
-### docker이미지 다운로드 
+### docker image 다운로드 
 > docker pull 이미지(허브ID(저장소ID)/이미지명:태그)
 
 ==> 저장소ID 생략시 기본 docker hub id
 
     $ docker pull httpd:latest
     
-### docker 이미지 목록조회
+### docker image 목록조회
 	docker images
 	docker image ls
+
+### docker image 자세한 정보 확인
+> docker image inspect < image | id >
+
+### container 생성
+> docker create <이미지>
+	docker create  docker create --name web1 httpd
     
-### 컨테이너 생성
-> docker create 이미지
-    
-### 컨테이너 시작
-> docker start 이미지
+### container 시작
+> docker start < image name | id >
 
 > docker start -a(attach) 이미지명
 
@@ -146,12 +150,16 @@ ctrl + p + q : 실행 컨테이너가 종료하질 않고 bash만 빠져나욤
 
 
 
-### 컨테이너 중지
-    docker stop 이미지 
+### Container 중지
+> docker stop < name | id > 
+	
 
-### 컨테이너 실행
+### Container 재시작
+> docker restart < name | id >
+
+### Container 실행(생성 및 시작)
     docker run [옵션] 이미지명
-==> run: create + start 2개 명령어 같이 실행한 것과 같음  
+==> run: create + start 2개 명령어 같이 실행한 것과 같음(docker run  run: create + start 합친 형태)  
 
     docker run -itd --name web httpd:latest
 ==> -it 옵션을 붙여야 shell 이미지 실행가능  
@@ -164,7 +172,7 @@ ctrl + p + q : 실행 컨테이너가 종료하질 않고 bash만 빠져나욤
 
     docker attach web
 
-(서비스 컨테이너에 bash명령 삽입)
+(서비스 Container에 bash명령 삽입)
 
     docker run -it --name web httpd:latest bash
 ==> 해당 이미지에 shell이 있어함.  
@@ -204,9 +212,9 @@ hard link를 붙인다는 의미
     docker ps -a
 => -a: 컨테이너 실행/중지 all전부 조회
     
+	$ docker ps -a | findstr ubuntu
+=> docker 컨테이너 중 ubuntu 찾기
 
-### docker inspect
-컨테이너(이미지) 세부정보 확인
 
     sudo docker inspect centos
 ==> "RoofFs": 영역이 layer 정보 임.  
@@ -294,6 +302,28 @@ hard link를 붙인다는 의미
 ==> 이 명령은 신중하게 모든 컨테이너 삭제됨!!!  
 
 
+
+
+### Container 리소스 사용량 통계
+> docker stats < name : id >
+
+### Container 프로세스(애플리케이션) 목록 확인
+> docker top < name | id >
+
+### Container 로그 확인
+> docker logs < name | id >
+
+### Container 명령 실행하기
+> docker exec < name | id > docker exec -it 2d81 sh
+
+위 명령 실행시 shell로 접속됨.  
+#hostname  
+#2d81~~~  
+
+### Container 표준 입력/출력/에러 붙이기
+> docker attach < name | id > 
+
+node 입/출력을 attach(붙였다.)
 
 
 
