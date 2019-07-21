@@ -30,7 +30,10 @@ host의 리소스를 공유
  나. Stable - 3개월 주기로 update 기술지원은 4개월까지 <== 실습시 사용 버전  
 
  centOS7 docker설치: https://docs.docker.com/install/linux/docker-ce/centos/  
-
+  
+    
+    
+    
 ## 1. docker 사전 설치
 1.yum 설치(사전 package설치]
 
