@@ -31,10 +31,12 @@ host의 리소스를 공유
 
  centOS7 docker설치: https://docs.docker.com/install/linux/docker-ce/centos/  
   
-    
-    
-    
-## 1. docker 사전 설치
+  
+  <br>
+  <br>
+  <br>
+  
+# 1. docker 사전 설치
 1.yum 설치(사전 package설치]
 
 	$ sudo yum install -y yum-utils \
