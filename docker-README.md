@@ -1,4 +1,4 @@
-# docker
+# docker 내용정리
 
 #### image 와  container 의 큰 차이점
 -image: disk에 존재
