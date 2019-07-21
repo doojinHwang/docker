@@ -60,6 +60,48 @@ host의 리소스를 공유
 	$ sudo yum install bash-completion
 	=> yum list bash-completion
 
+<br>
+
+### Windows docker 환경변수 설정 
+
+#### windows powerShell(cmd) docker ps 등 명령어 실행시 에러발생시 아래 환결설정 필요
+Windows에서 powerShell(cmd) 접속시 마다 아래 환경변수 설정이 필요.
+
+#### 1) docker 실행확인  
+    docker ps
+
+powerShell, cmd에서 docker 실행시 error발생시 권한설정필요.  
+
+    error during connect: Get http://%2F%2F.%2Fpipe%2Fdocker_engine/v1.39/containers/json: open //./pipe/docker_engine: The system cannot find the file specified. In the default daemon configuration on Windows, the docker client must be run elevated to connect. This error may also indicate that the docker daemon is not running.
+
+
+#### 2) docker 실행권한 확인  
+    minikube.exe docker-env 
+위 명령으로 확인 후 powerShell, cmd 명령에 맞게 실행
+
+	$Env:DOCKER_TLS_VERIFY = "1"  
+	$Env:DOCKER_HOST = "tcp://192.168.99.100:2376"  
+	$Env:DOCKER_CERT_PATH = "C:\Users\ktds\.minikube\certs"  
+	'# Run this command to configure your shell:  
+	'# & minikube docker-env | Invoke-Expression  
+
+#### 3) docker 권한설정
+
+##### powerShell.exe
+    minikube docker-env | Invoke-Expression 
+
+##### cmd.exe
+    @FOR /f "tokens=*" %i IN ('minikube docker-env') DO @%i
+
+
+
+#### 4) docker 확인
+    docker --version
+1) EE(docker enterprise 버전)
+2) CE(open source): 실습시 사용
+ 가. Edge - 1 월  주기로 개발됨, -최신버전이나 안정되질 않음  
+ 나. Stable - 3개월 주기로 update 기술지원은 4개월까지
+
   <br>
   <br>
   <br>
