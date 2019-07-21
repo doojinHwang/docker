@@ -1,8 +1,8 @@
 # docker 내용정리
 
 #### image 와  container 의 큰 차이점
--image: disk에 존재
--container : 메모리에 존재
+-image: disk에 존재  
+-container : 메모리에 존재  
 
 #### docker host : docker가 엔진이 설치된 머신
 -다수의 contaniner 존재(설치 가능)
