@@ -38,7 +38,7 @@ host의 리소스를 공유
   
 ## 2. docker 설치  
 
-### 1) docker 사전 설치
+### 사전 설치
 
 1.yum 설치(사전 package설치]
 
@@ -51,7 +51,7 @@ host의 리소스를 공유
 	    https://download.docker.com/linux/centos/docker-ce.repo
 
 
-### 2) docker 설치
+### docker 설치
 	$ sudo yum install docker-ce docker-ce-cli containerd.io
 	$ sudo systemctl start docker 
 	$ sudo systemctl enable docker 
