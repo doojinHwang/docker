@@ -40,21 +40,27 @@ host의 리소스를 공유
 
 ### 사전 설치
 
-1.yum 설치(사전 package설치]
+#### yum 설치(사전 package설치]
 
 	$ sudo yum install -y yum-utils \
 	  device-mapper-persistent-data \
 	  lvm2
 
+#### (centos) 리포지토리 연결
 	$ sudo yum-config-manager \
 	    --add-repo \
 	    https://download.docker.com/linux/centos/docker-ce.repo
 
+#### 리포지토리 목록조회
+	$ sudo yum repolist
 
-### docker 설치
+### docker 패키지 설치
+docker-ce, docker-ce-cli, containerd.io 3가지 한 번에 설치
+
 	$ sudo yum install docker-ce docker-ce-cli containerd.io
 	$ sudo systemctl start docker 
 	$ sudo systemctl enable docker 
+==> enable docker: docker 자동 실행 옵션 
 
 참고 : bash-completion 자동완성 패키지
 	$ sudo yum install bash-completion
@@ -97,10 +103,11 @@ powerShell, cmd에서 docker 실행시 error발생시 권한설정필요.
 
 #### 4) docker 확인
     docker --version
-1) EE(docker enterprise 버전)
-2) CE(open source): 실습시 사용
+1) EE(docker Enterprise Edition 버전) - 유료
+2) CE(Eommunity Edition): open source 보통 테스트(실습)시 사용
  가. Edge - 1 월  주기로 개발됨, -최신버전이나 안정되질 않음  
- 나. Stable - 3개월 주기로 update 기술지원은 4개월까지
+ 나. Stable - 3개월 주기로 update 기술지원은 4개월까지  
+ (참고) CentOS와 같은 엔터프라이즈 리눅스는 Docker EE기 기본 
 
   <br>
   <br>
@@ -108,32 +115,98 @@ powerShell, cmd에서 docker 실행시 error발생시 권한설정필요.
   
 ## 3. docker 명령어
 (참고) sudo docker ~ 
-==> root권한이면 sudo 생략가능하지만 사용자 계정이면 sudo를 사용
+==> root권한이면 sudo 생략가능하지만 사용자 계정이면 sudo를 사용  
 
-### 이미지 검색
+### 1) 도커 이미지 관리
+
+#### dokcer help 명령어
+    sudo docker --help 
+	
+#### 도커 이미지 검색
 > docker serach <이미지명>
 
     $ docker search cnetos
     
-### docker image 다운로드 
+#### docker image 다운로드 
 > docker pull 이미지(허브ID(저장소ID)/이미지명:태그)
 
 ==> 저장소ID 생략시 기본 docker hub id
 
     $ docker pull httpd:latest
     
-### docker image 목록조회
+#### docker image 목록조회
 	docker images
 	docker image ls
 
-### docker image 자세한 정보 확인
+#### docker image 자세한 정보 확인
 > docker image inspect < image | id >
 
-### container 생성
-> docker create <이미지>
+
+    sudo docker inspect centos
+==> "RoofFs": 영역이 layer 정보 임.  
+==> 이미지인지/컨테이너인지 구분은 상세정보 중에 network정보로 구분, 즉 IP가 부여된 것은 컨테이너  
+
+
+#### docker image 삭제
+> docker rmi <이미지명> 
+    
+    docker rmi apache
+
+(참고) hard link : 
+- file -> I-node  : file에 대한 링크 정보를 같고~~~  
+
+
+#### docker tag 부여
+hard link를 붙인다는 의미 
+
+> sudo docker tag 허브ID(onsoftel)/리포지토리이름:태그  
+
+    sudo docker tag centos:latest redface7/2019-02-cccr:centos
+    sudo docker tag centos:latest onsoftel/2019-02-cccr:centos
+    
+
+
+#### docker 이미지 업로드
+> docker push --help
+> sudo docker push 허브ID/리포지토리이름:태그 
+
+    sudo docker push dj/httpd:latest
+
+
+<br>
+
+(참고) docker 이미지 종류   
+(한재경 강사 의견 기준)    
+- shell 이미지: 세부정보 내용중 Config정보에서 CMD 영역이: /bin/bash 있으면 해당  
+- service 이미지  
+
+
+
+
+
+
+### 2) 도커 컨테이너 관리
+
+#### 컨테이너 목록 조회
+    docker ps
+=> 실행중인 컨테이너만 조회
+
+    docker ps -a
+=> -a: 컨테이너 실행/중지 all전부 조회
+    
+	$ docker ps -a | findstr ubuntu
+=> docker 컨테이너 중 ubuntu 찾기
+
+#### 컨테이너 세부사항 조회
+> docker inspect --help
+> docker inspect [option] [name|id]
+	docker inspect web1
+
+#### 컨테이너 생성
+> docker create [옵션] <이미지>
 	docker create  docker create --name web1 httpd
     
-### container 시작
+#### 컨테이너 시작
 > docker start < image name | id >
 
 > docker start -a(attach) 이미지명
@@ -150,15 +223,15 @@ ctrl + p + q : 실행 컨테이너가 종료하질 않고 bash만 빠져나욤
 
 
 
-### Container 중지
+#### 컨테이너 중지
 > docker stop < name | id > 
 	
 
-### Container 재시작
+#### 컨테이너 재시작
 > docker restart < name | id >
 
-### Container 실행(생성 및 시작)
-    docker run [옵션] 이미지명
+#### 컨테이너 실행(생성 및 시작)
+    docker run [옵션] <이미지명> [COMMAND] [ARG...]
 ==> run: create + start 2개 명령어 같이 실행한 것과 같음(docker run  run: create + start 합친 형태)  
 
     docker run -itd --name web httpd:latest
@@ -179,71 +252,50 @@ ctrl + p + q : 실행 컨테이너가 종료하질 않고 bash만 빠져나욤
 ==> 컨테이너 실행시 bash로 접속되여 명령서 실행 가능  
 
 
-### docker image 삭제
-> docker rmi <이미지명> 
+#### 컨테이너 삭제
+> docker rm <컨테이너>
+
+    docker rm httpd
+==>  실행중인 컨테이너는 삭제 안됨.
+
+#### 실행중인 컨테이너 강제 삭제
+> docker rm -f 이미지명
+
+    docker rm -f httpd
     
-    docker rmi apache
-
-(참고) hard link : 
-- file -> I-node  : file에 대한 링크 정보를 같고~~~  
-
-### docker tag 부여
-hard link를 붙인다는 의미 
-
-> sudo docker tag 허브ID(onsoftel)/리포지토리이름:태그  
-
-    sudo docker tag centos:latest redface7/2019-02-cccr:centos
-    sudo docker tag centos:latest onsoftel/2019-02-cccr:centos
-    
-### dokcer help 명령어
-    sudo docker push --help 
-
-### docker image push
-> sudo docker push 허브ID/리포지토리이름:태그 
-
-    sudo docker push dj/httpd:latest
-
-### sudo docker ps
-컨테이너 목록 조회
-
-    docker ps
-=> 실행중니 컨테이너만 조회
-
-    docker ps -a
-=> -a: 컨테이너 실행/중지 all전부 조회
-    
-	$ docker ps -a | findstr ubuntu
-=> docker 컨테이너 중 ubuntu 찾기
-
-
-    sudo docker inspect centos
-==> "RoofFs": 영역이 layer 정보 임.  
-==> 이미지인지/컨테이너인지 구분은 상세정보 중에 network정보로 구분, 즉 IP가 부여된 것은 컨테이너  
-
-<br>
-
-(참고) docker 이미지 종류   
-(한재경 강사 의견 기준)    
-- shell 이미지: 세부정보 내용중 Config정보에서 CMD 영역이: /bin/bash 있으면 해당  
-- service 이미지  
+#### 모든 컨테이너 삭제
+    docker rm -f $(sudo docker ps -aq) 
+==> -q는 id만 보이기, docker ps -aq: 모든 컨테이너 id 조회  
+==> $( docker ps -aq) 리눅스 명령어으로 ()안에서 얻어 id에 대한 모든 컨테이너 대상  
+==> 이 명령은 신중하게 모든 컨테이너 삭제됨!!!
 
 
 
-  <br>
-  <br>
-  <br>
+#### 컨테이너 접근
+백그라운드에 실행중인 컨테이너에 접근(쉡접속명령)
+> sudo docker attach <컨테이너명>
+
+	docker run -itd --name c1 centos:latest
+	==> itd: 표준 입출력을 사용할 수 있는 상태로 백그라운드 실행
+	docker ps
+	==> c1 컨테이너 실행 상태확인
+	docker attach c1
+	==> c1 컨테이너에 bash 접속
 
 
-### 쉡접속명령
-    sudo docker attach <컨테이너명>
-    
-### docker volume ls
+#### 실행중인 컨테이너에서 애플리케이션 실행
+실행중인 컨테이너에서 애플리케이션을 수정하거나, 추가로 애플리케이션 실행할 수 있음  
+ > sudo docker exec <컨테이너명>  
+ 
+ -i -t 옵션 많이 사용  
+ 
+    $ sudo docker exec -it web bash
+==> bash shell 포함 http같이 실행됨.  
 
-###  curl ip : 서비스 내용 확인(예: html소스보임)
+(참고) apache 이미지의 http.conf 파일 위치 확인: cd DocumnetRoot httd.conf  
+==> exec 실행된 컨테이너 에서 exit로 빠져나오면 컨테이는 종료되질 않고 bash(shell) 만 종료됨.  
 
-
-
-### Container 프로세스(애플리케이션) 목록 확인
+#### 컨테이너 프로세스(애플리케이션) 목록 확인
 컨테이너에서 실행되고 있는 프로세스 목록 확인
 > docker top <컨테이너 이름, ID> <ps 옵션> 
 
@@ -262,66 +314,45 @@ hard link를 붙인다는 의미
 -l: 자세한 형식으로 출력합니다.  
 -n: WCHAN 값을 숫자료 출력합니다.  
 
-### 실행중인 컨테이너 수정  
- > sudo docker exec <컨테이너명>  
- 
- -i -t 옵션 많이 사용  
- 
-    $ sudo docker exec -it web bash
-==> bash shell 포함 http같이 실행됨.  
 
-(참고) apache 이미지의 http.conf 파일 위치 확인: cd DocumnetRoot httd.conf  
-==> exec 실행된 컨테이너 에서 exit로 빠져나오면 컨테이는 종료되질 않고 bash(shell) 만 종료됨.  
-
-
-### 컨테이너 이름 변경
+#### 컨테이너 이름 변경
 > docker rename <기존이름> <새이름>
 
 
-### 컨테이너 일시중지/해제
+#### 컨테이너 일시중지/해제
 > docker pause <컨테이너 이름>
 > docker unpause <컨테이너 이름>
 
-### 전체 컨테이너 정보확인: cpu, memory사용량 등  
+#### 컨테이너 파일 복사
+> docker cp --help
+
+#### 전체 컨테이너 정보확인: cpu, memory사용량 등  
   docker stats --no-stream
 
-### 컨테이너 삭제
-> docker rm <컨테이너>
+#### docker volume ls
 
-    docker rm httpd
-==>  실행중인 컨테이너는 삭제 안됨.
-
-### 실행중인 컨테이너 강제 삭제
-> docker rm -f 이미지명
-
-    docker rm -f httpd
-    
-### 모든 컨테이너 삭제
-    docker rm -f $(sudo docker ps -aq) 
-==> -q는 id만 보이기, docker ps -aq: 모든 컨테이너 id 조회  
-==> $( docker ps -aq) 리눅스 명령어으로 ()안에서 얻어 id에 대한 모든 컨테이너 대상  
-==> 이 명령은 신중하게 모든 컨테이너 삭제됨!!!  
+####  curl ip : 서비스 내용 확인(예: html소스보임) 
 
 
 
 
-### Container 리소스 사용량 통계
+#### Container 리소스 사용량 통계
 > docker stats < name : id >
 
-### Container 프로세스(애플리케이션) 목록 확인
+#### Container 프로세스(애플리케이션) 목록 확인
 > docker top < name | id >
 
-### Container 로그 확인
+#### Container 로그 확인
 > docker logs < name | id >
 
-### Container 명령 실행하기
+#### Container 명령 실행하기
 > docker exec < name | id > docker exec -it 2d81 sh
 
 위 명령 실행시 shell로 접속됨.  
 #hostname  
 #2d81~~~  
 
-### Container 표준 입력/출력/에러 붙이기
+#### Container 표준 입력/출력/에러 붙이기
 > docker attach < name | id > 
 
 node 입/출력을 attach(붙였다.)
@@ -330,7 +361,7 @@ node 입/출력을 attach(붙였다.)
 
 
 
-### docker host에 있는 file을 넣거나 빼기 
+#### docker host에 있는 file을 넣거나 빼기 
     docker cp --help
 
 (참고) 
@@ -347,7 +378,7 @@ node 입/출력을 attach(붙였다.)
       sudo docker exec web cat /usr/local/apache2/htdocs/index.html  
 
 
-### 상태변경 확인
+#### 상태변경 확인
 > sudo docker diff <이미지명>
  
     sudo docker diff web
@@ -357,17 +388,6 @@ node 입/출력을 attach(붙였다.)
 
 ### 이미지 만들기
 실행중인 컨테이너로...
-
-commit, export
-
-    docker commit --help
-(주의) [ REPOSTORY[:TAG] ] 룰을 지켜라, 옵션이지만 가능하면 사용하라..  
-
-    docker commit web dj/httpd:1
-
-
-    sudo docker run -it --name c1 centos:latest
-==>shell bash접속상태.  
 
 
 #### (1) httpd 설치
@@ -388,22 +408,30 @@ commit, export
     해당 httpd.service 문서 vi로 열어로 실행 명령어 복사 후 
     # /usr/sbin/httpd -DFOREGROUND & <== &백그라운드로 실행하라명령!!
 
-### (4) command 명령으로 서비스 실행 
+#### (4) command 명령으로 서비스 실행 
     $sudo run -d --name webtest dj/httpd:2 /usr/sbin/httpd -DFOREGOUND
 ==> inspect "Cmd" 영역이 bash 명령으로 지정됨.
 
 
+#### 컨테이너에서 이미지 제작: commit
+commit 명령을 사용하여 컨테이너를 수정하여 새로운 이미지로 생성할 수 있음.  
+
+commit, export  
+
+    docker commit --help
+(주의) [ REPOSTORY[:TAG] ] 룰을 지켜라, 옵션이지만 가능하면 사용하라..  
+
+    docker commit web dj/httpd:1
 
 
-<hr/>
+    sudo docker run -it --name c1 centos:latest
+==>shell bash접속상태.  
 
-  <br>
-  <br>
-  <br>
 
-## docker 저장소 : 폐쇄망 
 
-### 모든 이미지를 archive으로 저장
+### docker 저장소 : 폐쇄망 
+
+#### 모든 이미지를 archive으로 저장
 > docker save --help
 
     docker save -o save.tar httpd alpine centos 
@@ -413,19 +441,19 @@ commit, export
     $ sudo file save.tar
     $ sudo tar tf save.tar <= 파일내용정보보기 
 
-### archive(압축) 해제 
+#### archive(압축) 해제 
 > docker load --help
     
     docker load -i save.tar
 
 
-### 컨테이너 export
+#### 컨테이너 export
     docker run -d --name h1 httpd
     docker export --help
     docker export h1 -o export.tar
     sudo tar -tf export.tar | grep index.html <=압축 파일내 index.html 확인
 
-### 컨테이너 import
+#### 컨테이너 import
     sudo docker import --help
     sudo docker import <파일>  [ REPOSITORY[:TAG] ]
     sudo dockr import export.tar dj/export:latest
@@ -449,7 +477,7 @@ commit, export
 
 
 
-## docker 네트워크
+### docker 네트워크
 (참고) https://docs.docker.com/network/ 
 
     $ sudo yum -y install bridge-utils #bridge-utils 설치
@@ -491,7 +519,7 @@ commit, export
 	sudo docker run -d --name h1 httpd
 	sudo docker exec a1 ping 172.17.0.2
 
-### network 연결
+#### network 연결
 커스텀 네트워크 연결, 내부에 dns프로세스 동작됨(양방향 통신????)  
 
 	sudo docker network connect --help
@@ -516,7 +544,7 @@ commit, export
 
 
 
-## docker link
+### docker link
 	$ sudo docker --link 
 ==> 단방향????
 
@@ -563,7 +591,7 @@ commit, export
 
 
 
-## docker 포트 지정
+### docker 포트 지정
 	$ sudo docker run -d --name -p 8080:80 httpd
 
 
@@ -573,11 +601,11 @@ commit, export
 	$ ip a s eth0 <== 네트워크 확인
 
 
-### 방화벽 열기: 
+#### 방화벽 열기: 
 	sudo firewall-cmd -add (--reload) http
 	systemctl status httpd
 	
-### 네트워크 사용 port확인
+#### 네트워크 사용 port확인
 	sudo ss -ntip
 
 
@@ -589,7 +617,7 @@ commit, export
   <br>
 
 
-## docker volume
+### docker volume
 
 	$ sudo docker volume ls
 	$ sudo docker volume create testvol
@@ -607,7 +635,7 @@ commit, export
 
 <br>
 
-### disk 추가
+#### disk 추가
 	$ lsblk 
 	==> disk 정보보기 
 
@@ -636,7 +664,7 @@ db는 보통 자동 volume 설정 상태
   <br>
 
 
-## Container log 확인
+#### Container log 확인
 
 	$ sudo docker logs -t d1 <-t time...
 ==>MYSQL_RANDOM_ROOT_PASSWORD: 사용 비번막기..  
