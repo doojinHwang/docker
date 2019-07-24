@@ -480,6 +480,17 @@ commit, export
 ### docker 네트워크
 (참고) https://docs.docker.com/network/ 
 
+호스트에 도커를 설치하고 컨테이너를 생성하는 경우 docker0 인터페이스가 생성 됨.  
+
+docker0 인터페이스는 가상 네트워크 인터페이스이며, 172.17.~/8 의 ip를 할당받게 됨  
+docker0 인터페이스는 bridge 네트워크로 컨테이너가 하나씩 생성될때마다 바인딩 되는 형식  
+컨테이너가 통신할 때에는 무조건 docker0 인터페이스를 거치게 됨  
+브릿지에 대한 정보는 brctl show 명령어로 확인 가능  
+
+
+출처: https://dololak.tistory.com/390 [코끼리를 냉장고에 넣는 방법]
+
+
     $ sudo yum -y install bridge-utils #bridge-utils 설치
     $ brctl show
     $ sudo docker run -itd --name a1 alpine
@@ -510,7 +521,8 @@ commit, export
 	cidi표기법:ip주소/subnet ~255를 > prefix로 벼환시 24개
 
 	$ sudo docker network ls
-	$ brctl show
+	
+	$ brctl show <== 브릿지에 대한 정보
 
 	 sudo docker network ls
 
