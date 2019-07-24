@@ -488,11 +488,16 @@ docker0 인터페이스는 bridge 네트워크로 컨테이너가 하나씩 생�
 브릿지에 대한 정보는 brctl show 명령어로 확인 가능  
 
 
-출처: https://dololak.tistory.com/390 [코끼리를 냉장고에 넣는 방법]
+출처: https://dololak.tistory.com/390 [코끼리를 냉장고에 넣는 방법]  
+
+(네트워크 확인) - docker0 리눅스 브릿지 확인  
+	ip a s
 
 
     $ sudo yum -y install bridge-utils #bridge-utils 설치
+	
     $ brctl show
+	
     $ sudo docker run -itd --name a1 alpine
     $ sudo docker run -itd --name a2 alpine
     $ sudo docker run -itd --name a3 alpine
@@ -509,7 +514,7 @@ docker0 인터페이스는 bridge 네트워크로 컨테이너가 하나씩 생�
 
 
     $ sudo docker run -itd --name a2 --network host alpine
-    $  sudo docker exec a2 ip a s
+    $  sudo docker exec a2 ip a s <== ip address 확인
 
 
     $ sudo docker run -itd --name a3 --network none alpine <== none설정으로 외부에서 접속 안됨
@@ -530,7 +535,8 @@ docker0 인터페이스는 bridge 네트워크로 컨테이너가 하나씩 생�
 	sudo docker exec a2 ??
 	sudo docker run -d --name h1 httpd
 	sudo docker exec a1 ping 172.17.0.2
-
+	
+	
 #### network 연결
 커스텀 네트워크 연결, 내부에 dns프로세스 동작됨(양방향 통신????)  
 
@@ -544,8 +550,51 @@ docker0 인터페이스는 bridge 네트워크로 컨테이너가 하나씩 생�
 
 
 
+<
+#### 네트워크 연습
+<br><br>
+	(참고)  
+	ip a s      <== docker0 리눅스 브릿지 확인
+	brctl show	<== 리눅스 브릿지 연결상태확인(실행되는 컨테이너가 없으면 docker0의 interfaces 내용없음)
+	docker run -itd --name c1 centos
+	brctl show <== 실행컨테이너가 존재하므로 docker0의 interfaces 할당값을 볼수 있음, eth0과 동일할 것으로 예상
+	
+	-- centos 컨테이너 접속 --
+	docker attche c1 <== centos 컨테이너로 접속
+	yum -y install net-tools <== cetntos접속 상태에서 net-tools설치
+	ipconfig <== centos 컨테이너의 ip정보확인
+	route -n
+	ping -c2 google.co.kr <== 구글접속확인용 ping, 즉, 외부접속확인
+	iptables -L -t nat <== docker 호스트에서 NAT테이블을 확인하면 마스커레이딩(MASQUERADE)이 설정되어 있음
+	-- contos 컨테이너 접속종료 --
+	docker network    <== 다수으 서버커맨드 확인가능(서버명령어), --help와 같음
+	docker network ls <== 호스트에 존재하는 네트워크 목록(docker 네트워크는 기본 bridge(docker0과 같음), host, none 세 종류 존재)
+	
+	(네트워크 확인)
+	docker inspect bridge <== 도커 bridge네트워크 확인
+	docker network create my-net <== bridge유형의 도커 네트워크 생성
+	docker network ls <== 도커 네트워크 목록 조회
+	
+	(네트워크 설정)
+	docker network create --subnet 192.168.0.0/24 --gateway 192.168.0.254 cus-net
+	==> --subnet: 네트워크 범위지정, --gateway: 게이트웨이
+	docker network ls <== 확인시 cus-net 확인됨.
+	docker inspect cus-net <== cus-net 네트워크 내용 확인
+	
+	(생성 할당한 네트워크로 컨테이너 생성 실행-방법-1)
+	docker run -it --net cus-net --name a1 alpine
+	
+	(생성 할당한 네트워크로 컨테이너 생성 실행-방법2)
+	==> 방법1에서 컨테이너 실행시 네트워크 생성이나 아래는 이미 생성된 컨테이너에 네트워크 붙이기
+	docker run -itd --name a1 alpine
+	docker network connect cus-net a1
+	
+	(실행중인 컨테이너에 접속하여 네트워크 정보 확인)
+	docker attach a1 
+	ipconfig
+==> (참고) docker0은 기본적으로 172.17.0.0/16 네트워크 사용  
 
-
+<br><br>
 
 <hr/>
   <br>
