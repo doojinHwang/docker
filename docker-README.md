@@ -199,11 +199,13 @@ hard link를 붙인다는 의미
 
 #### 컨테이너 세부사항 조회
 > docker inspect --help
+
 > docker inspect [option] [name|id]
 	docker inspect web1
 
 #### 컨테이너 생성
 > docker create [옵션] <이미지>
+
 	docker create  docker create --name web1 httpd
     
 #### 컨테이너 시작
