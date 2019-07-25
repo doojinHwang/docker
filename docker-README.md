@@ -989,7 +989,7 @@ mysql:5.7내 inspect설정 정보중 Entrypoint 설정 예: docker-entrypoint.sh
   
   
   
-## 멀티 컨테이너 관리: Docker Dompose
+## 멀티 컨테이너 관리: Docker Compose
 docker는 기본 단일 host로 관리 됨~ㅠㅠ  
 
 ### Dockr Compose
