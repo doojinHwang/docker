@@ -409,7 +409,7 @@ node 입/출력을 attach(붙였다.)
     # /usr/sbin/httpd -DFOREGROUND & <== &백그라운드로 실행하라명령!!
 
 #### (4) command 명령으로 서비스 실행 
-    $sudo run -d --name webtest dj/httpd:2 /usr/sbin/httpd -DFOREGOUND
+    $sudo docker run -d --name webtest dj/httpd:2 /usr/sbin/httpd -DFOREGOUND
 ==> inspect "Cmd" 영역이 bash 명령으로 지정됨.
 
 
